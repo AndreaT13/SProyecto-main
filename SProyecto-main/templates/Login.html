@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distribuidora La Hacienda, S.A. - Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
     <div class="login-container">
         <div class="login-box">
             <img src="{{ url_for('static', filename='Imagenes/logo.png') }}" alt="La Hacienda" class="logo">
             <h2>BIENVENIDO</h2>
-            <form action="/login" method="post">
+            <form action="" method="post">
                 <input type="text" name="usuario" placeholder="Usuario" required>
                 <input type="password" name="contrasena" placeholder="Contraseña" required>
                 <button type="submit">Ingresar</button>
@@ -29,4 +29,3 @@
     </div>
 </body>
 </html>
-

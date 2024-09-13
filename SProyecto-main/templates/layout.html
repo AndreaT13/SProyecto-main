@@ -8,20 +8,20 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar sesión</a>
     <div class="container">
         <h1 class="my-4"> Distribuidora La Hacienda S.A. </h1>
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link {% if tab == 'informacion' %}active{% endif %}" href="/">Información</a>
+                <a class="nav-link {% if tab == 'informacion' %}active{% endif %}" href="{{ url_for('home') }}">Información</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if tab == 'pedidos' %}active{% endif %}" href="/pedidos">Pedidos</a>
+                <a class="nav-link {% if tab == 'pedidos' %}active{% endif %}" href="{{ url_for('tab1') }}">Pedidos</a>
             </li>
         </ul>
         <div class="tab-content mt-4">
             {% if tab == 'informacion' %}
             <ul>
-                
                 <li>
                     <h3>Misión</h3>
                     <p>Consolidarnos como la mejor distribuidora de alimentos balanceados de la región, atendiendo le cada día, las diferentes diferentes necesidades de nuestros clientes, apoyándolos con atención y calidad en el servicio.</p>
@@ -49,7 +49,7 @@
                     <h3>Marcas con las que se Trabaja</h3>
                     <ul>
                         <li>
-                            <img src="C:\Users\AngieG01\Downloads\SProyecto-main\SProyecto-main\Imagenes\Purina-Logo.png" alt="Productos Purina®">
+                            <img src="{{ url_for('static', filename='Imagenes/Purina-Logo.png') }}" alt="Productos Purina®">
                             <p>Para animales de granja.</p>
                         </li>
                     </ul>

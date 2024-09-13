@@ -52,5 +52,12 @@ def tab1():
         return redirect(url_for('login'))
     return render_template('layout.html', tab='pedidos')
 
+@app.route('/logout')
+def logout():
+    # Clear the user's session
+    session.clear()
+    # Redirect to the login page
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
     app.run(debug=True)
