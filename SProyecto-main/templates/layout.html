@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar sesión</a>
+    
     <div class="container">
         <h1 class="my-4"> Distribuidora La Hacienda S.A. </h1>
         <ul class="nav nav-tabs">
@@ -19,6 +19,11 @@
                 <a class="nav-link {% if tab == 'pedidos' %}active{% endif %}" href="{{ url_for('tab1') }}">Pedidos</a>
             </li>
         </ul>
+        {% if tab == 'pedidos' %}
+        <li class="nav-item float-right">
+            <a class="nav-link btn btn-danger" href="{{ url_for('logout') }}">Cerrar sesión</a>
+        </li>
+        {% endif %}
         <div class="tab-content mt-4">
             {% if tab == 'informacion' %}
             <ul>
@@ -56,7 +61,18 @@
                 </li>
             </ul>
             {% elif tab == 'pedidos' %}
-            <p>This is Pedidos content.</p>
+            {% if login_required %}
+              <!-- Display login form here -->
+              <form action="" method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password"><br><br>
+                <input type="submit" value="Login">
+              </form>
+            {% else %}
+              <p>This is Pedidos content.</p>
+            {% endif %}
             {% endif %}
         </div>
     </div>

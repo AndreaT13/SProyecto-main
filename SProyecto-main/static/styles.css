@@ -1,5 +1,9 @@
 /* Estilos para la sección de Información de la Empresa */
 
+.body{
+  background-color: #FFCFCF;
+}
+
 .tab-content {
     padding: 20px;
     background-color: #f9f9f9;

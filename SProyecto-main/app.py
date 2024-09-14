@@ -41,23 +41,25 @@ def login():
 
 @app.route('/')
 def home():
-    if 'user_id' in session:
-        return render_template('layout.html', tab='informacion')
-    else:
-        return redirect(url_for('login'))
+    return render_template('layout.html', tab='informacion')
 
 @app.route('/pedidos')
-def tab1():
-    if 'user_id' not in session:
+@app.route('/informacion')
+def tab1(tab=None):
+    if tab is None:
+        tab = 'pedidos'
+    if tab == 'informacion':
+        return render_template('layout.html', tab=tab)
+    elif tab == 'pedidos' and 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('layout.html', tab='pedidos')
+    return render_template('layout.html', tab=tab)
 
 @app.route('/logout')
 def logout():
     # Clear the user's session
     session.clear()
     # Redirect to the login page
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)
