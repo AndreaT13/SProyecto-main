@@ -1,7 +1,13 @@
 /* Estilos para la sección de Información de la Empresa */
 
-.body{
-  background-color: #FFCFCF;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ea2300;
+  color: #ddcbcb;
+  margin: 0;
+  padding: 0;
+  background-image: url(https://img.freepik.com/fotos-premium/granja-cielo-azul-granero-al-fondo_693425-1405.jpg?w=826);
+  background-size: cover;
 }
 
 .tab-content {
@@ -54,3 +60,25 @@
   .tab-content ul li ul li {
     margin-bottom: 10px;
   }
+
+  .imagen-item img {
+    width: 400px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 40px;
+}
+
+  .gallery {
+    display: flex; /* Usa flexbox para alinear los elementos en una fila */
+    overflow-x: auto; /* Permite el desplazamiento horizontal si hay muchas imágenes */
+    white-space: nowrap; /* Evita que las imágenes se rompan en varias líneas */
+  }
+  
+  /* Estilo para las imágenes en la galería */
+  .gallery img {
+    max-width: 150%; /* Asegura que las imágenes no sean más grandes que el contenedor */
+    height: auto; /* Mantiene la proporción original de las imágenes */
+    margin-right: 80px; /* Espacio entre imágenes */
+  }
+  
+  

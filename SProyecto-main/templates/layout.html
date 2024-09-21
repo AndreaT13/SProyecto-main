@@ -51,13 +51,15 @@
                     <p> Domingo de 8:00 am a 12:30 pm</p>
                 </li>
                 <li>
-                    <h3>Marcas con las que se Trabaja</h3>
-                    <ul>
-                        <li>
-                            <img src="{{ url_for('static', filename='Imagenes/Purina-Logo.png') }}" alt="Productos Purina®">
-                            <p>Para animales de granja.</p>
-                        </li>
-                    </ul>
+                    <center> <h3>CONOCE NUESTRAS MARCAS</h3></center>
+                
+                    <div class="gallery">
+                     <img src="{{ url_for('static', filename='Imagenes/purina.png')}}" alt="purina">
+                     <img src="{{ url_for('static', filename='Imagenes/petmaster.jpg')}}" alt="petmaster">
+                     <img src="{{ url_for('static', filename='Imagenes/gati.png')}}" alt="gati">
+                     <img src="{{ url_for('static', filename='Imagenes/dongato.png')}}" alt="dongato">
+                     <img src="{{ url_for('static', filename='Imagenes/dogui.png')}}" alt="dogui">
+                   </div>
                 </li>
             </ul>
             {% elif tab == 'pedidos' %}
@@ -71,10 +73,101 @@
                 <input type="submit" value="Login">
               </form>
             {% else %}
-              <p>This is Pedidos content.</p>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-header">
+                      Nuevo Pedido
+                    </div>
+                    <div class="card-body">
+                      <form action="" method="post">
+                        <div class="form-group">
+                          <label for="fecha">Fecha:</label>
+                          <input type="date" class="form-control" id="fecha" name="fecha">
+                        </div>
+                        <div class="form-group">
+                          <label for="cliente">Cliente:</label>
+                          <select class="form-control" id="cliente" name="cliente">
+                            <option value="">Seleccione un cliente</option>
+                            {% for cliente in clientes %}
+                              <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="producto">Producto:</label>
+                          <select class="form-control" id="producto" name="producto">
+                            <option value="">Seleccione un producto</option>
+                            {% for producto in productos %}
+                              <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="cantidad">Cantidad:</label>
+                          <input type="number" class="form-control" id="cantidad" name="cantidad">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar al pedido</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="card">
+                    <div class="card-header">
+                      Detalle del Pedido
+                    </div>
+                    <div class="card-body">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for item in pedido %}
+                            <tr>
+                              <td>{{ item.producto.nombre }}</td>
+                              <td>{{ item.cantidad }}</td>
+                              <td>{{ item.producto.precio }}</td>
+                              <td>{{ item.subtotal }}</td>
+                              <td>
+                                <button type="button" class="btn btn-danger" onclick="eliminarItem('{{item.id}}')">Eliminar</button>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p>Total: {{ total }}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <button type="button" class="btn btn-success" onclick="guardarPedido()">Guardar Pedido</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             {% endif %}
             {% endif %}
         </div>
     </div>
+    <script>
+      function eliminarItem(itemId) {
+        // Aquí se enviaría una solicitud al servidor para eliminar el item del pedido.
+        // Se debe actualizar la tabla y el total del pedido.
+      }
+
+      function guardarPedido() {
+        // Aquí se enviaría una solicitud al servidor para guardar el pedido.
+        // Se debe mostrar un mensaje de éxito o error al usuario.
+      }
+    </script>
 </body>
 </html>

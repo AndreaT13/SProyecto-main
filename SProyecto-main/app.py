@@ -1,13 +1,11 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import request, redirect, url_for, flash, session
 
 pymysql.install_as_MySQLdb()
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'ANGIESECRETA'
-
-#app = Flask(__name__)
 
 # Configuración de la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/seminario'
@@ -16,10 +14,26 @@ db = SQLAlchemy(app)
 
 # Modelo de la tabla de usuarios
 class Usuarios(db.Model):
-    _tablename_ = 'usuarios'
+    __tablename__ = 'usuarios'  # corregido
     id_usuario = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(50), unique=True, nullable=False)
     contrasena = db.Column(db.String(100), nullable=False)
+
+# Modelo de la tabla de clientes
+class Clientes(db.Model):
+    __tablename__ = 'clientes'  # corregido
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    nit = db.Column(db.String(20), nullable=False)
+    telefono = db.Column(db.String(20), nullable=False)
+    direccion = db.Column(db.String(200), nullable=False)
+
+# Modelo de la tabla de productos
+class Productos(db.Model):
+    __tablename__ = 'productos'  # corregido
+    id = db.Column(db.Integer, primary_key=True)
+    producto = db.Column(db.String(100), nullable=False)
+    precio = db.Column(db.Double, nullable=False)  # corregido
 
 # Ruta para el inicio de sesión
 @app.route('/login', methods=['GET', 'POST'])
@@ -52,7 +66,13 @@ def tab1(tab=None):
         return render_template('layout.html', tab=tab)
     elif tab == 'pedidos' and 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('layout.html', tab=tab)
+
+    # Obtener clientes y productos de la base de datos
+    clientes = Clientes.query.all()
+    productos = Productos.query.all()  # Obtener productos
+
+    # Pasar clientes y productos a la plantilla
+    return render_template('layout.html', tab=tab, clientes=clientes, productos=productos)
 
 @app.route('/logout')
 def logout():
