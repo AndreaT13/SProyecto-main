@@ -99,7 +99,7 @@
                           <select class="form-control" id="producto" name="producto">
                             <option value="">Seleccione un producto</option>
                             {% for producto in productos %}
-                              <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+                              <option value="{{ producto.id }}">{{ producto.producto }}</option>
                             {% endfor %}
                           </select>
                         </div>
@@ -125,7 +125,6 @@
                             <th>Cantidad</th>
                             <th>Precio</th>
                             <th>Subtotal</th>
-                            <th>Acciones</th>
                           </tr>
                         </thead>
                         <tbody>

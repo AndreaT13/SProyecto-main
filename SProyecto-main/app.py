@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
 from flask import request, redirect, url_for, flash, session
+from sqlalchemy import DECIMAL
 
 pymysql.install_as_MySQLdb()
 app = Flask(__name__, static_folder='static')
@@ -30,10 +31,12 @@ class Clientes(db.Model):
 
 # Modelo de la tabla de productos
 class Productos(db.Model):
-    __tablename__ = 'productos'  # corregido
+    __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
-    producto = db.Column(db.String(100), nullable=False)
-    precio = db.Column(db.Double, nullable=False)  # corregido
+    producto = db.Column(db.String(50))  # Nombre del producto
+    precio = db.Column(db.Float)  # Precio del producto
+
+
 
 # Ruta para el inicio de sesión
 @app.route('/login', methods=['GET', 'POST'])
