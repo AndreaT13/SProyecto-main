@@ -1,0 +1,106 @@
+@model IEnumerable<sitAlimentos.Models.SolicitudAlimentos.D_Solicitud_Alimento>
+
+
+    <style>
+        .bg-success-lighter {
+            background-color: #009900; /* Un tono más claro de verde */
+        }
+    
+        th:nth-child(1), td:nth-child(1) {
+            position: sticky;
+            left: 0px;
+        }
+    
+    </style>
+    
+    <div class="table-responsive">
+        <table id="tablaDetalle" class="table table-striped table-bordered table-hover table-sm isDataTable _isExportTable withOutAutoFit">
+            <thead>
+                <tr class="text-white bg-success">
+                    <td>
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Cod_Solicitud)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Correlativo)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Estado_D)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Desc_Cocina)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Nombre_Empleado)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Fecha_Inicio)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Fecha_Fin)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Desc_Preparado)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Unidades)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Precio)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Total)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Ubicacion_Destino)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Observaciones)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Motivo_Solicitud)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Observaciones_D)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Cod_Empleado_Solicitante)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Correo)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Telefono_Contacto)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Desc_Area)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model.Fecha_Solicitud)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model._Kostl)
+                    </td>
+                    <td class="text-nowrap" style="padding: 2px 14px;">
+                        @Html.DisplayNameFor(model => model._LText)
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrEmptyIfNull())
+                {
+                    <tr id="Enc_Det_tr_@(@item.Cod_Solicitud)_@(@item.Correlativo)">
+                        @await Html.PartialAsync("Row_EncabezadosDetalle", item)
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    @section Scripts {
+        <script src="~/js/app.jquery.components_util.js"></script>
+        <script src="~/lib/datatables/buttons-2.2.2/js/buttons.html5.min.js"></script>
+        <script src="~/lib/datatables/pdfmake-0.1.36/pdfmake.js"></script>
+        <script src="~/lib/datatables/pdfmake-0.1.36/vfs_fonts.js"></script>
+    }

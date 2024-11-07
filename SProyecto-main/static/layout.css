@@ -1,0 +1,153 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url(https://img.freepik.com/fotos-premium/granja-cielo-azul-granero-al-fondo_693425-1405.jpg?w=826);
+    background-size: cover;
+}
+.navbar {
+    background-color: #e81c24;
+}
+.navbar a {
+    color: white;
+    padding: 14px 20px;
+    text-decoration: none;
+    display: inline-block;
+}
+.navbar a:hover {
+    background-color: #e2485c;
+}
+.content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4
+    px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gallery {
+display: flex; /* Usa flexbox para alinear los elementos en una fila */
+overflow-x: auto; /* Permite el desplazamiento horizontal si hay muchas imágenes */
+white-space: nowrap; /* Evita que las imágenes se rompan en varias líneas */
+}
+
+/* Estilo para las imágenes en la galería */
+.gallery img {
+max-width: 10%; /* Asegura que las imágenes no sean más grandes que el contenedor */
+height: auto; /* Mantiene la proporción original de las imágenes */
+margin-right: 10%; /* Espacio entre imágenes */
+border-radius: 50%;
+
+}
+
+.sucursales-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    background: linear-gradient(to right, #e8f5e9, #f1f8e9);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.sucursal-card {
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 5px solid #eb1a47;
+}
+
+.sucursal-card:hover {
+    transform: scale(1.03) rotate(-1deg);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.sucursal-card h3 {
+    font-size: 1.3em;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sucursal-card h3 i {
+    color: #eb1a47;
+}
+
+.sucursal-card p {
+    color: #555;
+}
+
+.ver-mas-btn {
+    background-color: #eb1a47;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.ver-mas-btn:hover {
+    background-color: #e73131;
+}
+
+.mision-vision-container {
+    background: linear-gradient(135deg, #f5f7fa, #e8effc);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+}
+
+.mision-vision-text {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.mision-vision-text div {
+    flex: 1;
+    padding: 10px;
+}
+
+.mision-vision-container:hover {
+    background: linear-gradient(135deg, #e8effc, #f5f7fa);
+}
+
+
+.marcas-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.marca-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.marca-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.marca-item img:hover {
+    transform: scale(1.1);
+}
+
+.marca-item p {
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}

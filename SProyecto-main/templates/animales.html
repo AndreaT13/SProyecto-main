@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Distribuidora La Hacienda S.A.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://img.freepik.com/fotos-premium/granja-cielo-azul-granero-al-fondo_693425-1405.jpg?w=826);
+            background-size: cover;
+        }
+        .navbar {
+            background-color: #e81c24;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .navbar a:hover {
+            background-color: #af1e31;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4
+            px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-custom {
+    width: 10px; /* Ajusta el ancho de las cards */
+    margin-bottom: 10px;
+}
+
+.card-custom img {
+    height: 100px; /* Ajusta la altura de la imagen */
+    object-fit: cover;
+}
+
+.card-custom .card-body {
+    padding: 2px; /* Reduce el padding del cuerpo de la card */
+}
+
+.card-custom .card-title {
+    font-size: 12px; /* Ajusta el tamaño de la fuente del título */
+}
+
+.card-custom .card-text {
+    font-size: 10px; /* Ajusta el tamaño de la fuente del texto */
+}
+
+.gallery {
+  display: flex; /* Usa flexbox para alinear los elementos en una fila */
+  overflow-x: auto; /* Permite el desplazamiento horizontal si hay muchas imágenes */
+  white-space: nowrap; /* Evita que las imágenes se rompan en varias líneas */
+}
+
+ /* Estilo para las imágenes en la galería */
+ .gallery img {
+  max-width: 10%; /* Asegura que las imágenes no sean más grandes que el contenedor */
+  height: auto; /* Mantiene la proporción original de las imágenes */
+  margin-right: 10%; /* Espacio entre imágenes */
+  border-radius: 50%;
+  
+}
+    </style>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+</head>
+<body class="bg-blue-100">
+    <div class="container mx-auto">
+        <header class="text-center py-4">
+            <h1 class="text-2xl font-bold">Distribuidora La Hacienda S.A.</h1>
+        </header>
+        <nav class="navbar flex justify-center">
+            <a href="{{ url_for('inicio') }}">INICIO</a>
+            <a href="{{ url_for('mascotas') }}">MASCOTAS</a>
+            <a href="{{ url_for('animales') }}">ANIMALES DE GRANJA</a>
+            <a href="{{ url_for('sucursales') }}">SUCURSALES</a>
+            <a href="{{ url_for('login') }}">INGRESAR</a>
+        </nav>
+   
+        <div class="container">
+            <h1 class="my-4">Productos de Animales</h1>
+            <div class="row">
+                {% for producto in productos %}
+                <div class="col-sm-4 mb-4">
+                    <div class="card card-custom">
+                        <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" class="card-img-top" alt="{{ producto.producto }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.producto }}</h5>
+                            <p class="card-text">Precio: {{ producto.precio }}</p>
+                            <a href="#" class="btn btn-primary">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            
+        </div>
+    
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    </body>
+    </html>

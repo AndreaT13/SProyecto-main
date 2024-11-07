@@ -29,7 +29,7 @@ body {
     padding: 0;
     margin: 0;
   }
-  
+
   .tab-content li {
     margin-bottom: 20px;
   }
@@ -65,20 +65,66 @@ body {
     width: 400px;
     height: 200px;
     object-fit: cover;
-    border-radius: 40px;
+    border-radius: 20px;
 }
 
-  .gallery {
-    display: flex; /* Usa flexbox para alinear los elementos en una fila */
-    overflow-x: auto; /* Permite el desplazamiento horizontal si hay muchas imágenes */
-    white-space: nowrap; /* Evita que las imágenes se rompan en varias líneas */
-  }
+.gallery {
+  display: flex; /* Usa flexbox para alinear los elementos en una fila */
+  overflow-x: auto; /* Permite el desplazamiento horizontal si hay muchas imágenes */
+  white-space: nowrap; /* Evita que las imágenes se rompan en varias líneas */
+}
+
+ /* Estilo para las imágenes en la galería */
+ .gallery img {
+  max-width: 100%; /* Asegura que las imágenes no sean más grandes que el contenedor */
+  height: auto; /* Mantiene la proporción original de las imágenes */
+  margin-right: 100px; /* Espacio entre imágenes */
   
-  /* Estilo para las imágenes en la galería */
-  .gallery img {
-    max-width: 150%; /* Asegura que las imágenes no sean más grandes que el contenedor */
-    height: auto; /* Mantiene la proporción original de las imágenes */
-    margin-right: 80px; /* Espacio entre imágenes */
-  }
-  
-  
+}
+
+.accordion {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #ddd;
+}
+
+.accordion-button {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  padding: 15px;
+  text-align: left;
+  border: none;
+  border-radius: 0;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #0056b3;
+}
+
+.accordion-button:hover {
+  background-color: #0056b3;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.accordion-body {
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.accordion-collapse {
+  transition: max-height 0.3s ease;
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}

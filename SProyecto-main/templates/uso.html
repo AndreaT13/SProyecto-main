@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Pedido</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pedidos.css') }}">
+</head>
+<style>
+form {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+</style>
+<body>
+
+<!-- Barra lateral -->
+<div class="sidebar">
+    <a  href="{{ url_for('crear_pedidos') }}">Pedidos</a>
+    <a href="{{ url_for('mostrar_clientes') }}">Clientes</a>
+    <a href="{{ url_for('crear_usuario') }}">Usuarios</a>
+    <a href="{{ url_for('mostrar_productos') }}">Productos</a>
+    <a href="{{ url_for('logout') }}">Cerrar Sesion</a>
+</div>
+
+<div class="container mt-5">
+    <center> <h2>Crear Pedido</h2></center>
+    <form action="{{ url_for('guardar_pedido') }}" method="POST">
+        <!-- Información del Pedido -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="pedidoNo" class="form-label">Pedido No.</label>
+                <input type="text" id="pedido_id" name="pedido_id" value="{{ pedido_id }}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <label for="id_cliente">Código Cliente:</label>              
+                  <div class="input-group">
+                    <input type="text" id="id_cliente" name="id_cliente"  readonly required>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#clientesModal">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label for="nombreCliente" class="form-label">Nombre Cliente</label>
+                <input type="text" class="form-control" name= "nombreCliente" id="nombreCliente" readonly required>
+            </div>
+            
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" name= "direccion" id="direccion" readonly required>
+            </div>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <h4>Detalle Pedido</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="productosTabla" name="producto">
+                <!-- Aquí se agregarán los productos dinámicamente -->
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productosModal">
+            Agregar Producto
+        </button>
+
+        <div class="row mt-4">
+            <div class="col-md-4 offset-md-8">
+                <div class="d-flex justify-content-between">
+                    <span>Sub Total:</span>
+                    <span>Q<span id="subTotal">0.00</span></span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Descuentos:</span>
+                    <span>Q<span id="descuentos">0.00</span></span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span><strong>Total:</strong></span>
+                    <span><strong>Q<span id="total">0.00</span></strong></span>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="totalPedido" name="totalPedido">
+
+        <button type="submit" class="btn btn-success mt-3">Submit</button>
+
+    </form>
+</div>
+
+<!-- Modal para agregar productos -->
+<div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productosModalLabel">Agregar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="buscarProducto" class="form-control mb-3" placeholder="Buscar producto por nombre">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productosLista"  >
+                        <!-- Aquí se mostrarán los productos para seleccionar -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para seleccionar clientes -->
+<div class="modal fade" id="clientesModal" tabindex="-1" aria-labelledby="clientesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clientesModalLabel">Seleccionar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="buscarCliente" class="form-control mb-3" placeholder="Buscar cliente por nombre">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientesLista">
+                        <!-- Aquí se mostrarán los clientes para seleccionar -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para manejar la selección de cliente -->
+<script>
+    const productosLista = document.getElementById('productosLista');
+    const buscarProducto = document.getElementById('buscarProducto');
+    const clientesLista = document.getElementById('clientesLista');
+    const buscarCliente = document.getElementById('buscarCliente');
+
+    // Función para llenar la lista de productos desde el backend
+    function llenarProductos(filtro = '') {
+        fetch('/api/productos')
+            .then(response => response.json())
+            .then(productos => {
+                productosLista.innerHTML = '';
+                const productosFiltrados = productos.filter(producto => producto.nombre.toLowerCase().includes(filtro.toLowerCase()));
+                productosFiltrados.forEach(producto => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${producto.id_producto}</td>
+                        <td>${producto.nombre}</td>
+                        <td>Q${producto.precio.toFixed(2)}</td>
+                        <td><button class="btn btn-success btn-sm" onclick="agregarProducto('${producto.id_producto}', '${producto.nombre}', ${producto.precio})">Agregar</button></td>
+                    `;
+                    productosLista.appendChild(fila);
+                });
+            });
+    }
+
+     // Función para llenar la lista de clientes desde el backend
+     function llenarClientes(filtro = '') {
+        fetch('/api/clientes')
+            .then(response => response.json())
+            .then(clientes => {
+                clientesLista.innerHTML = '';
+                const clientesFiltrados = clientes.filter(cliente => cliente.nombre.toLowerCase().includes(filtro.toLowerCase()));
+                clientesFiltrados.forEach(cliente => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${cliente.id_cliente}</td>
+                        <td>${cliente.nombre}</td>
+                        <td>${cliente.direccion}</td>
+                        <td><button class="btn btn-primary btn-sm" onclick="seleccionarCliente('${cliente.id_cliente}','${cliente.nombre}', '${cliente.direccion}')">Seleccionar</button></td>
+                    `;
+                    clientesLista.appendChild(fila);
+                });
+            });
+    }
+
+    // Función para seleccionar cliente
+    function seleccionarCliente( id, nombre, direccion) {
+        //document.getElementById('id_cliente').value = id;  // Asigna el código del cliente
+        document.getElementById('id_cliente').value = id;
+        document.getElementById('nombreCliente').value = nombre;
+        document.getElementById('direccion').value = direccion;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('clientesModal'));
+        modal.hide();
+    }
+
+    // Agregar evento de búsqueda
+    buscarProducto.addEventListener('input', (e) => {
+        llenarProductos(e.target.value);
+    });
+
+    buscarCliente.addEventListener('input', (e) => {
+        llenarClientes(e.target.value);
+    });
+
+    // Función para agregar producto a la tabla
+    function agregarProducto(id_producto, nombre, precio) {
+        const cantidad = prompt("Ingrese la cantidad:");
+        if (cantidad && !isNaN(cantidad) && cantidad > 0) {
+            const subtotal = precio * cantidad;
+            const tabla = document.getElementById('productosTabla');
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${id_producto}</td>
+                <td>${nombre}</td>
+                <td><input type="number" value="${cantidad}" class="form-control" onchange="calcularSubtotal(this, ${precio})"></td>
+                <td>Q${precio.toFixed(2)}</td>
+                <td>Q<span class="subtotal">${subtotal.toFixed(2)}</span></td>
+                <td><button class="btn btn-danger btn-sm" onclick="eliminarProducto(this)">Eliminar</button></td>
+            `;
+            tabla.appendChild(fila);
+            calcularTotal();
+        } else {
+            alert("Por favor ingrese una cantidad válida.");
+        }
+    }
+
+    // Función para calcular el subtotal basado en la cantidad
+    function calcularSubtotal(input, precio) {
+        const cantidad = input.value;
+        const subtotal = cantidad * precio;
+        const fila = input.closest('tr');
+        fila.querySelector('.subtotal').innerText = subtotal.toFixed(2);
+        calcularTotal();
+    }
+
+    // Función para eliminar producto de la tabla
+    function eliminarProducto(boton) {
+        const fila = boton.closest('tr');
+        fila.remove();
+        calcularTotal();
+    }
+
+    // Función para calcular el total
+    function calcularTotal() {
+        const subtotales = document.querySelectorAll('.subtotal');
+        let total = 0;
+        subtotales.forEach(subtotal => {
+            total += parseFloat(subtotal.innerText);
+        });
+        document.getElementById('subTotal').innerText = total.toFixed(2);
+        // Aquí puedes agregar el cálculo de descuentos si es necesario
+        const descuentos = 0; // Cambia esto si aplicas descuentos
+        document.getElementById('descuentos').innerText = descuentos.toFixed(2);
+        document.getElementById('total').innerText = (total - descuentos).toFixed(2);
+    }
+
+    // Inicializar las listas de productos y clientes
+    llenarProductos();
+    llenarClientes();
+
+    function crearPedido() {
+    const productos = [];
+    const rows = document.querySelectorAll('#productosTabla tbody tr');
+    rows.forEach(row => {
+        const cantidad = row.querySelector('input[type="number"]').value;
+        const nombre = row.cells[1].textContent;  // Suponiendo que el nombre está en la segunda celda
+        const precio = parseFloat(row.cells[3].textContent); // Suponiendo que el precio está en la cuarta celda
+        productos.push({ nombre, cantidad: cantidad, precio: precio });
+    });
+
+    const data = {
+        id_cliente: document.getElementById('id_cliente').value,
+        nombreCliente: document.getElementById('nombreCliente').value,
+        direccion: document.getElementById('direccion').value,
+        productos: productos
+    };
+
+    fetch('/crear_pedido', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'  // Asegúrate de que este encabezado esté aquí
+        },
+        body: JSON.stringify(data)  // Convierte el objeto en una cadena JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        // Maneja la respuesta del servidor
+    })
+    .catch(error => console.error('Error al crear el pedido:', error));
+}
+
+</script>
+
+</body>
+</html>

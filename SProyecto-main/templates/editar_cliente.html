@@ -1,0 +1,19 @@
+<form method="POST">
+    <div class="mb-3">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ cliente.nombre }}" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" value="{{ cliente.direccion }}" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" value="{{ cliente.telefono }}" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="correo">Correo Electrónico:</label>
+        <input type="email" id="correo" name="correo" value="{{ cliente.correo }}" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>

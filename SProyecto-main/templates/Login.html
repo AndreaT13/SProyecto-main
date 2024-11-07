@@ -6,7 +6,28 @@
     <title>Distribuidora La Hacienda, S.A. - Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
+<style>
+  body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://img.freepik.com/fotos-premium/granja-cielo-azul-granero-al-fondo_693425-1405.jpg?w=826);
+            background-size: cover;
+        }
+</style>
 <body>
+  <header class="text-center py-4">
+   <center> <h1 class="text-2xl font-bold">Distribuidora La Hacienda S.A.</h1></center>
+</header>
+<nav class="navbar flex justify-center">
+    <a href="{{ url_for('inicio') }}">INICIO</a>
+    <a href="{{ url_for('mascotas') }}">PRODUCTOS</a>
+    <a href="{{ url_for('sucursales') }}">SUCURSALES</a>
+    <a href="{{ url_for('login') }}">INGRESAR</a>
+</nav>
+
+  <div id="toast" class="toast-message toast-{{ category }}" style="display: none;">
+  {{ message }}
+  </div>
+  
     <div class="login-container">
         <div class="login-box">
             <img src="{{ url_for('static', filename='Imagenes/lh.png') }}" alt="La Hacienda" class="logo">
@@ -16,16 +37,21 @@
                 <input type="password" name="contrasena" placeholder="Contraseña" required>
                 <button type="submit">Ingresar</button>
             </form>
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                <ul>
-                  {% for message in messages %}
-                    <li>{{ message }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            {% endwith %}
         </div>
     </div>
+
+ {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                document.getElementById("toast").classList.add("toast-{{ category }}");
+                document.getElementById("toast").innerText = "{{ message }}";
+                showToast();
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 </body>
 </html>

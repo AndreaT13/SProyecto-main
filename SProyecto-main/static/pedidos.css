@@ -1,0 +1,165 @@
+    /* Barra lateral */
+    .sidebar {
+        position: fixed; /* Fija la barra en su lugar */
+        top: 0;
+        left: 0;
+        width: 200px; /* Ancho de la barra */
+        height: 100%;
+        background-color: #b82b2b; /* Color de fondo */
+        padding-top: 20px;
+    }
+    
+    /* Enlaces dentro de la barra */
+    .sidebar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #fff;
+        display: block;
+    }
+    
+    /* Cambia el color cuando pasas el cursor */
+    .sidebar a:hover {
+        background-color: #d43a3a;
+    }
+    
+    /* Contenido principal */
+    .main-content {
+        margin-left: 220px; /* Deja espacio para la barra lateral */
+        padding: 20px;
+    }
+    
+   /* Estilo global para todos los formularios */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para etiquetas */
+form label {
+    display: block;
+    margin-bottom: 2px; /* Reducido el espacio debajo del label */
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Estilo para inputs */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="number"],
+form textarea,
+form select {
+    width: 100%;
+    padding: 8px; /* Reducido el padding interno */
+    margin-bottom: 2px; /* Reducido el espacio debajo del campo */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #fff;
+    transition: border-color 0.3s ease-in-out;
+}
+
+/* Estilo específico para el campo de contraseña */
+form input[type="password"] {
+    font-family: Arial, sans-serif;}
+
+/* Estilo para select */
+form select {
+    appearance: none;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Cambiar borde en focus */
+form input:focus,
+form textarea:focus,
+form select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Estilo para textarea */
+form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botón de envío */
+form button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px; /* Reducido el padding del botón */
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover en el botón de envío */
+form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para mensajes de error o advertencia */
+form .error {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+form .success {
+    color: green;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+/* Estilo de formulario en pantallas pequeñas */
+@media (max-width: 768px) {
+    form {
+        padding: 15px;
+    }
+
+    form input,
+    form textarea,
+    form select,
+    form button {
+        font-size: 14px;
+    }
+}
+
+/* Estilos para los mensajes de notificación */
+.toast-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s, transform 0.5s;
+}
+.toast-message.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+.toast-success {
+    background-color: #4CAF50; /* Verde para éxito */
+    color: white;
+}
+.toast-error {
+    background-color: #ff2922; /* Naranja para error */
+    color: white;
+}

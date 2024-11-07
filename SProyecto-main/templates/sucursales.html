@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Distribuidora La Hacienda S.A.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='layout.css') }}">
+
+</head>
+<body class="bg-blue-100">
+    <div class="container mx-auto">
+        <header class="text-center py-4">
+            <h1 class="text-2xl font-bold">Distribuidora La Hacienda S.A.</h1>
+        </header>
+        <nav class="navbar flex justify-center">
+            <a href="{{ url_for('inicio') }}">INICIO</a>
+            <a href="{{ url_for('mascotas') }}">PRODUCTOS</a>
+            <a href="{{ url_for('sucursales') }}">SUCURSALES</a>
+            <a href="{{ url_for('login') }}">INGRESAR</a>
+        </nav>
+        <main class="mt-8">
+            <div class="content mx-auto max-w-4xl">
+               <center> <h2 class="text-xl font-bold mb-4">Nuestras Sucursales</h2></center>
+
+               <div class="sucursales-container">
+                <div class="sucursal-card">
+                    <h3><i class="fas fa-store"></i> Sucursal Patulul (Central)</h3>
+                    <p><strong><i class="fas fa-clock"></i> Horario:</strong></p>
+                    <p>Lunes a Sábado: 8:00am a 12:30pm - 2:30pm a 6:00pm</p>
+                    <p>Domingo: 8:00am a 12:30pm</p>
+                    <button class="ver-mas-btn" onclick="window.open('https://maps.app.goo.gl/afSsKZjowzZsLtiY9', '_blank')">Ver en el mapa</button>
+                </div>
+                <div class="sucursal-card">
+                    <h3><i class="fas fa-store"></i> Sucursal San José</h3>
+                    <p><strong><i class="fas fa-clock"></i> Horario:</strong></p>
+                    <p>Lunes a Viernes: 7:30am a 4:00pm</p>
+                    <p>Domingo: 8:00am a 12:30pm</p>
+                    <button class="ver-mas-btn" onclick="window.open('https://maps.app.goo.gl/GmLavtuNcNvjtnpS7', '_blank')">Ver en el mapa</button>
+                </div>
+                <div class="sucursal-card">
+                    <h3><i class="fas fa-store"></i> Sucursal Santa Lucía Cotz</h3>
+                    <p><strong><i class="fas fa-clock"></i> Horario:</strong></p>
+                    <p>Lunes a Sábado: 8:00am a 5:00pm</p>
+                    <p>Domingo: 8:00am a 12:30pm</p>
+                    <button class="ver-mas-btn" onclick="window.open('https://maps.app.goo.gl/1xtWAKu4X3dHBHyz7', '_blank')">Ver en el mapa</button>
+                </div>
+                <div class="sucursal-card">
+                    <h3><i class="fas fa-store"></i> Sucursal La Gomera</h3>
+                    <p><strong><i class="fas fa-clock"></i> Horario:</strong></p>
+                    <p>Lunes a Sábado: 8:00am a 5:00pm</p>
+                    <button class="ver-mas-btn">Ver en el mapa</button>
+                </div>
+                <div class="sucursal-card">
+                    <h3><i class="fas fa-store"></i> Sucursal La Democracia</h3>
+                    <p><strong><i class="fas fa-clock"></i> Horario:</strong></p>
+                    <p>Lunes a Sábado: 8:00am a 5:00pm</p>
+                    <button class="ver-mas-btn">Ver en el mapa</button>
+                </div>
+            
+            </div> 
+            </div>
+        </main>
+    </div>
+</body>
+</html>

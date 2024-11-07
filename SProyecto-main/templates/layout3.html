@@ -1,0 +1,183 @@
+<html>
+<head>
+    <title>Distribuidora La Hacienda S.A.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRy7/5+5/Hm1v62qHH9FPibF5zZfF5Fb1puFEd1rs" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='layout.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Clase para ajustar el tamaño de las imágenes */
+        .carousel-item img {
+            width: 100%;              /* Hace que las imágenes ocupen todo el ancho del contenedor */
+            max-height: 300px;        /* Limita la altura máxima de las imágenes */
+            object-fit: contain;      /* Asegura que la imagen mantenga su proporción sin recortar */
+      
+        }
+    </style>
+
+
+</head>
+<body class="bg-blue-100">
+    <div class="container mx-auto">
+        <header class="text-center py-4">
+            <h1 class="text-2xl font-bold">Distribuidora La Hacienda S.A.</h1>
+        </header>
+        <nav class="navbar flex justify-center">
+            <a href="{{ url_for('inicio') }}">INICIO</a>
+            <a href="{{ url_for('mascotas') }}">PRODUCTOS</a>
+            <a href="{{ url_for('sucursales') }}">SUCURSALES</a>
+            <a href="{{ url_for('login') }}">INGRESAR</a>
+        </nav>
+        <main class="mt-8">
+            <div class="content mx-auto max-w-4xl">
+                <div class="mision-vision-container">
+                    <div class="mision-vision-text">
+                        <div>
+                            <h2><i class="fas fa-bullseye"></i> Misión</h2>
+                            <p>Consolidarnos como la mejor distribuidora de alimentos balanceados de la región, atendiendo le cada día, las diferentes diferentes necesidades de nuestros clientes, apoyándolos con atención y calidad en el servicio.</p>
+
+                        </div>
+                        <div>
+                            <h2><i class="fas fa-eye"></i> Visión</h2>
+                            <p>Ser el líder de la región en la distribución de alimentos balanceados para animales, mediante un mejoramiento continuo en servicio, asesoría e implementación de nuevas técnicas y recursos útiles para nuestros clientes en el manejo de sus negocios.</p>
+
+                        </div>
+                    </div>
+                </div>
+
+                <center> <h3 class="text-xl font-bold">Nuestras Marcas</h3>  </center><br>
+
+                <div class="marcas-container">
+                    <div class="marca-item">
+                        <img src="{{ url_for('static', filename='Imagenes/purina.png')}}" alt="Purina">
+                        <p>Purina</p>
+                    </div>
+                    <div class="marca-item">
+                        <img src="{{ url_for('static', filename='Imagenes/petmaster.jpg')}}" alt="Pet Master">
+                        <p>Pet Master</p>
+                    </div>
+                    <div class="marca-item">
+                        <img src="{{ url_for('static', filename='Imagenes/gati.png')}}" alt="gati">
+                        <p>Gati</p>
+                    </div>
+                    <div class="marca-item">
+                        <img src="{{ url_for('static', filename='Imagenes/dongato.png')}}" alt="dongato">
+                        <p>Don Gato</p>
+                    </div>
+                    <div class="marca-item">
+                        <img src="{{ url_for('static', filename='Imagenes/dogui.png')}}" alt="dogui">
+                        <p>Dogui</p>
+                    </div>
+                    
+                    <!-- Más marcas aquí -->
+                </div>
+                <br><br><br>
+
+                <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                    <!-- Indicadores del carrusel -->
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="3" aria-label="Slide 4"></button>
+
+                    </div>
+            
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-6">
+                                    <img src="{{ url_for('static', filename='Imagenes/promo1.png') }}" class="d-block w-100" alt="Imagen 1">
+                                </div>
+                                <div class="col-6">
+                                    <img src="{{ url_for('static', filename='Imagenes/promo2.png') }}" class="d-block w-100" alt="Imagen 2">
+                                </div>
+                            </div>
+                            <div class="carousel-caption d-none d-md-block">
+                                <!-- Puedes agregar algún texto o contenido aquí si lo deseas -->
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-6">
+                                    <img src="{{ url_for('static', filename='Imagenes/promo3.png') }}" class="d-block w-100" alt="Imagen 3">
+                                </div>
+                                <div class="col-6">
+                                    <img src="{{ url_for('static', filename='Imagenes/promo4.png') }}" class="d-block w-100" alt="Imagen 4">
+                                </div>
+                            </div>
+                            <div class="carousel-caption d-none d-md-block">
+                                <!-- Puedes agregar algún texto o contenido aquí si lo deseas -->
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Controles del carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+
+                
+                  
+                  <br><br>
+
+
+                <nav class="navbar flex justify-center">
+                    <footer class="bg-red text-white py-3">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h5>Sobre Nosotros</h5>
+                                    <p>Somos una empresa dedicada a ofrecer los mejores productos del mercado. Nos importa la calidad y el servicio.</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4>Métodos de Pago</h4>
+                                    <ul>
+                                        <li><img src="{{ url_for('static', filename='Imagenes/efectivo.png') }}" alt="Efectivo" width="30"> Efectivo</li>
+                                        <li><img src="{{ url_for('static', filename='Imagenes/visa.png') }}" alt="Visa" width="30"> Visa</li>
+                                        <li><img src="{{ url_for('static', filename='Imagenes/master.png') }}" alt="MasterCard" width="30"> MasterCard</li>
+                                        <li><img src="{{ url_for('static', filename='Imagenes/bank.png') }}" alt="Transferencia Bancaria" width="30"> Transferencia Bancaria</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5>Contacto</h5>
+                                    <p><strong>Tel:</strong> +1 (123) 456-7890</p>
+                                    <p><strong>Email:</strong> contacto@empresa.com</p>
+                                   
+                                </div>
+                                <div class="col-md-3">
+                                    <p><strong>Atención al cliente</strong></p>
+                                    <p>Sucursal Central</p>
+                                    <p>Sucursal San José</p>
+                                    <p>Sucursal Santa Lucía Cotz</p>
+                                    <p>Sucursal La Gomera</p>
+                                    <p>Sucursal La Democracia</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <p>&copy; 2024 UMG. Todos los derechos reservados.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                    
+                </nav>
+            </div>
+
+            
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ksmVXkzzzoP4m2sz5Zr2nszA4U9XN7fDkQvOjWt99P7uHkcp+7b08XAiPp83QPKF" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

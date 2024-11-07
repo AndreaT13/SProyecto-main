@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pedidos.css') }}">
+</head>
+<body>
+
+    <!-- Barra lateral -->
+    <div class="sidebar">
+        <a href="{{ url_for('uso') }}">Pedidos</a>
+        <a href="{{ url_for('mostrar_clientes') }}">Clientes</a>
+        <a href="{{ url_for('crear_usuario') }}">Usuarios</a>
+        <a href="{{ url_for('mostrar_productos') }}">Productos</a>
+        <a href="{{ url_for('logout') }}">Cerrar Sesion</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Productos</h1>
+
+        <!-- Botón para agregar producto -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registrarProductoModal">
+            Nuevo Producto
+        </button>
+        <a href="/descargar_pdf_productos" class="btn btn-primary">
+            PDF
+        </a>
+        <br>
+        <br>
+        <br>
+        <!-- Tabla de productos -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.id_producto }}</td>
+                    <td>{{ producto.producto }}</td>
+                    <td> Q{{ producto.precio }}</td>
+                    <td>
+                        <!-- Aquí puedes agregar botones para editar o eliminar productos -->
+                
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No hay productos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para registrar producto -->
+    <div class="modal fade" id="registrarProductoModal" tabindex="-1" aria-labelledby="registrarProductoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registrarProductoModalLabel">Registrar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/crear_producto">
+                        <div class="mb-3">
+                            <label for="id_producto">Código:</label>
+                            <input type="text" id="id_producto" name="id_producto" required maxlength="100" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="nombre">Nombre: *</label>
+                            <input type="text" id="nombre" name="nombre" required maxlength="100" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio">Precio: *</label>
+                            <input type="number" id="precio" name="precio" required class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_categoria">Categoría: *</label>
+                            <input type="text" id="id_categoria" name="id_categoria" required class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+
+
+                     
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+
+         // Función para eliminar producto de la tabla
+    function eliminarProducto(boton) {
+        const fila = boton.closest('tr');
+        fila.remove();
+        
+    }
+    </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <!-- Notificación de éxito o error -->
+     {% with messages = get_flashed_messages(with_categories=true) %}
+     {% if messages %}
+       {% for category, message in messages %}
+           <div id="toast" class="toast-message toast-{{ category }}">{{ message }}</div>
+       {% endfor %}
+       <script>
+           // Muestra el mensaje tipo "toast" por 3 segundos
+           document.addEventListener("DOMContentLoaded", function() {
+               const toast = document.getElementById("toast");
+               toast.classList.add("show");
+               setTimeout(() => {
+                   toast.classList.remove("show");
+               }, 3000);  // Oculta después de 3 segundos
+           });
+       </script>
+     {% endif %}
+   {% endwith %}
+
+</body>
+</html>
