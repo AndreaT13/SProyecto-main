@@ -95,3 +95,16 @@ body {
 .toast-success {
     background-color: #4CAF50; /* Verde para éxito */
 }
+
+/* Estilo para mensajes de error o advertencia */
+form .error {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+form .success {
+    color: green;
+    font-size: 12px;
+    margin-bottom: 10px;
+}

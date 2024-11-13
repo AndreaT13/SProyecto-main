@@ -12,6 +12,8 @@
             background-image: url(https://img.freepik.com/fotos-premium/granja-cielo-azul-granero-al-fondo_693425-1405.jpg?w=826);
             background-size: cover;
         }
+
+    
 </style>
 <body>
   <header class="text-center py-4">
@@ -24,9 +26,7 @@
     <a href="{{ url_for('login') }}">INGRESAR</a>
 </nav>
 
-  <div id="toast" class="toast-message toast-{{ category }}" style="display: none;">
-  {{ message }}
-  </div>
+  
   
     <div class="login-container">
         <div class="login-box">
@@ -40,18 +40,29 @@
         </div>
     </div>
 
- {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <script>
-                document.getElementById("toast").classList.add("toast-{{ category }}");
-                document.getElementById("toast").innerText = "{{ message }}";
-                showToast();
-            </script>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+         <!-- Notificación de éxito o error -->
+         {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+           {% for category, message in messages %}
+               <div id="toast" class="toast-message toast-{{ category }}">{{ message }}</div>
+           {% endfor %}
+           <script>
+               // Muestra el mensaje tipo "toast" por 3 segundos
+               document.addEventListener("DOMContentLoaded", function() {
+                   const toast = document.getElementById("toast");
+                   toast.classList.add("show");
+                   setTimeout(() => {
+                       toast.classList.remove("show");
+                   }, 3000);  // Oculta después de 3 segundos
+               });
+           </script>
+         {% endif %}
+       {% endwith %}
+    
 
 </body>
 </html>

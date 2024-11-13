@@ -163,3 +163,18 @@ form .success {
     background-color: #ff2922; /* Naranja para error */
     color: white;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f4f4f4;
+}

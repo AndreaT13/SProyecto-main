@@ -46,10 +46,7 @@
                     <td>{{ producto.id_producto }}</td>
                     <td>{{ producto.producto }}</td>
                     <td> Q{{ producto.precio }}</td>
-                    <td>
-                        <!-- Aquí puedes agregar botones para editar o eliminar productos -->
-                
-                    </td>
+                   
                 </tr>
                 {% else %}
                 <tr>
@@ -80,7 +77,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="precio">Precio: *</label>
-                            <input type="number" id="precio" name="precio" required class="form-control">
+                            <input type="double" id="precio" name="precio" required class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="id_categoria">Categoría: *</label>

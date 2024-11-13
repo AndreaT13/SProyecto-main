@@ -3,83 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedido</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='uso.css') }}">
+    <title>Administrador de Pedidos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pedidos.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .toast-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1055;
+        padding: 15px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        color: white;
+        display: none;
+    }
+    .toast-success {
+        background-color: #28a745;
+    }
+    .toast-error {
+        background-color: #dc3545;
+    }
+    .toast-message.show {
+        display: block;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeout {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+</style>
+
 </head>
 <body>
-    <section class="order-form">
-        <form method="POST">
-            <div class="form-header">
-                <div class="form-row">
-                    <label for="cliente">Cliente:</label>
-                    <input type="text" id="cliente" name="cliente">
-                </div>
-                <div class="form-row">
-                    <label for="direccion">Dirección:</label>
-                    <input type="text" id="direccion" name="direccion">
-                </div>
-                <div class="form-row">
-                    <label for="entrega">Entrega:</label>
-                    <input type="text" id="entrega" name="entrega">
-                </div>
-                <div class="form-row">
-                    <label for="pago">Forma de Pago:</label>
-                    <select id="pago" name="pago">
-                        <option value="efectivo">Efectivo</option>
-                        <option value="credito">Crédito</option>
-                    </select>
-                </div>
-            </div>
 
-            <!-- Tabla de Productos -->
-            <div class="form-section">
-                <h3>Productos</h3>
-                <table id="productos-table">
-                    <thead>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="toastMensaje" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Aquí aparecerán los mensajes.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    
+
+ <!-- Barra lateral -->
+ <div class="sidebar">
+    <a href="{{ url_for('uso') }}">Pedidos</a>
+    <a href="{{ url_for('administrar_pedidos')}}">Administrador de Pedidos</a>
+    <a href="{{ url_for('mostrar_clientes') }}">Clientes</a>
+    <a href="{{ url_for('crear_usuario') }}">Usuarios</a>
+    <a href="{{ url_for('mostrar_productos') }}">Productos</a>
+    <a href="{{ url_for('logout') }}">Cerrar Sesion</a>
+</div>
+
+
+
+<div class="main-content">
+    <h2 class="text-center">Administrador de Pedidos</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" id="filtroCliente" class="form-control" placeholder="Filtrar por cliente">
+        </div>
+        <div class="col-md-3">
+            <input type="date" id="fechaInicio" class="form-control" placeholder="Fecha inicio">
+        </div>
+        <div class="col-md-3">
+            <input type="date" id="fechaFin" class="form-control" placeholder="Fecha fin">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" onclick="filtrarPedidos()">Filtrar</button>
+        </div>
+    </div>
+    
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID Pedido</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Detalles</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="pedidosTabla">
+            <!-- Los pedidos se cargarán dinámicamente -->
+        </tbody>
+    </table>
+</div>
+<script>
+    // Cargar la lista de pedidos al cargar la página
+    document.addEventListener('DOMContentLoaded', cargarPedidos);
+
+    function cargarPedidos() {
+        fetch('/api/pedidos')
+            .then(response => response.json())
+            .then(pedidos => {
+                const tabla = document.getElementById('pedidosTabla');
+                tabla.innerHTML = ''; // Limpia la tabla antes de agregar filas
+                pedidos.forEach(pedido => {
+                    const detalles = pedido.detalles.map(detalle => `
+                        <div>
+                            Producto: ${detalle.nombre_producto}, Cantidad: ${detalle.cantidad}, Precio: Q${detalle.precio}, Subtotal: Q${detalle.subtotal}
+                        </div>
+                    `).join('');
+
+                const fecha = new Date(pedido.fecha); // Convertir la fecha a objeto Date
+                const fechaCorta = fecha.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+
+                    const row = `
                         <tr>
-                            <th>Código</th>
-                            <th>Descripción</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Total</th>
-                            <th>Acciones</th>
+                            <td>${pedido.id_pedido}</td>
+                            <td>${pedido.fecha}</td>
+                            <td>${pedido.cliente}</td> <!-- Mostrar el nombre del cliente -->
+
+                            <td>
+                                <select class="form-select" onchange="actualizarEstado(${pedido.id_pedido}, this.value)">
+                                    <option value="Pendiente" ${pedido.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                    <option value="En Proceso" ${pedido.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                                    <option value="Completado" ${pedido.estado === 'Completado' ? 'selected' : ''}>Completado</option>
+                                    <option value="Facturado" ${pedido.estado === 'Facturado' ? 'selected' : ''}>Facturado</option>
+                                </select>
+                            </td>
+                            <td>                     
+                                <a href="/pedido/${pedido.id_pedido}/detalle-pdf" target="_blank" class="btn btn-primary btn-sm">Ver Detalle</a>
+                            </td>
+                            <td><button class="btn btn-danger" onclick="eliminarPedido(${pedido.id_pedido})">Eliminar</button></td>
                         </tr>
-                    </thead>
-                    <tbody id="productos-body">
-                        <!-- Filas de productos -->
-                    </tbody>
-                </table>
-                <button type="button" id="agregar-producto">Agregar Producto</button>
-            </div>
+                    `;
+                    tabla.insertAdjacentHTML('beforeend', row);
+                });
+            })
+            .catch(error => console.error('Error al cargar pedidos:', error));
+    }
 
-            <div class="form-footer">
-                <button type="submit">Guardar Pedido</button>
-            </div>
-        </form>
-    </section>
+    function actualizarEstado(idPedido, nuevoEstado) {
+    const data = {
+        estado: nuevoEstado
+    };
 
+    fetch(`/api/pedidos/${idPedido}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            mostrarToast('Estado del pedido actualizado con éxito.', 'success');
+            location.reload(); // Recarga la página si es necesario
+        } else {
+            mostrarToast(`Error: ${data.message}`, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarToast('Error al conectar con el servidor.', 'danger');
+    });
+}
+
+
+    // Eliminar un pedido
+    function eliminarPedido(idPedido) {
+        if (!confirm('¿Estás seguro de eliminar este pedido?')) return;
+
+        fetch(`/api/pedidos/${idPedido}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            cargarPedidos(); // Recargar la tabla después de eliminar
+        })
+        .catch(error => console.error('Error al eliminar el pedido:', error));
+    }
+
+    function mostrarToast(mensaje, tipo) {
+    const toastElement = document.getElementById('toastMensaje');
+    const toastBody = toastElement.querySelector('.toast-body');
+    toastBody.textContent = mensaje;
+
+    toastElement.className = `toast align-items-center text-bg-${tipo} border-0`;
+
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+}
+
+
+    function filtrarPedidos() {
+    const cliente = document.getElementById('filtroCliente').value.trim();
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+
+    // Construir la URL con los parámetros de filtro
+    let url = '/api/pedidos?';
+    const params = [];
+    if (cliente) params.push(`cliente=${encodeURIComponent(cliente)}`);
+    if (fechaInicio) params.push(`fecha_inicio=${fechaInicio}`);
+    if (fechaFin) params.push(`fecha_fin=${fechaFin}`);
+    url += params.join('&');
+
+    // Enviar la solicitud al servidor
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error HTTP! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                actualizarTablaPedidos(data.pedidos);
+            } else {
+                console.error("Error en los datos del servidor:", data.message);
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error al filtrar pedidos:', error);
+            alert('Error al filtrar los pedidos. Verifique la consola.');
+        });
+}
+
+
+function actualizarTablaPedidos(pedidos) {
+    const tabla = document.getElementById('pedidosTabla');
+    tabla.innerHTML = ''; // Limpiar la tabla
+
+    if (pedidos.length === 0) {
+        tabla.innerHTML = '<tr><td colspan="6">No se encontraron pedidos.</td></tr>';
+        return;
+    }
+
+    pedidos.forEach(pedido => {
+        const detalles = pedido.detalles.map(detalle => `
+            <div>
+                Producto: ${detalle.nombre_producto}, Cantidad: ${detalle.cantidad}, 
+                Precio: Q${detalle.precio.toFixed(2)}, Subtotal: Q${detalle.subtotal.toFixed(2)}
+            </div>
+        `).join('');
+
+        const fila = `
+            <tr>
+                <td>${pedido.id_pedido}</td>
+                <td>${pedido.fecha}</td>
+                <td>${pedido.cliente}</td>
+                <td>
+                    <select class="form-select" onchange="actualizarEstado(${pedido.id_pedido}, this.value)">
+                        <option value="Pendiente" ${pedido.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="En Proceso" ${pedido.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                        <option value="Completado" ${pedido.estado === 'Completado' ? 'selected' : ''}>Completado</option>
+                        <option value="Cancelado" ${pedido.estado === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                    </select>
+                </td>
+                <td>
+                    ${detalles}
+                </td>
+                <td>
+                    <a href="/pedido/${pedido.id_pedido}/detalle-pdf" target="_blank" class="btn btn-primary btn-sm">Ver Detalle</a>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarPedido(${pedido.id_pedido})">Eliminar</button>
+                </td>
+            </tr>
+        `;
+        tabla.insertAdjacentHTML('beforeend', fila);
+    });
+}
+
+
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Notificación tipo "toast" -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+        <div id="toast" class="toast-message toast-{{ category }}">{{ message }}</div>
+    {% endfor %}
     <script>
-        // Funcionalidad para agregar productos a la tabla
-        document.getElementById('agregar-producto').addEventListener('click', function() {
-            const tableBody = document.getElementById('productos-body');
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="text" name="codigo[]" value="0000000000"></td>
-                <td><input type="text" name="producto[]" value="Producto X"></td>
-                <td><input type="number" name="cantidad[]" value="1"></td>
-                <td><input type="number" name="precio[]" step="0.01" value="100.00"></td>
-                <td><input type="number" step="0.01" value="100.00" disabled></td>
-                <td><button type="button" class="eliminar-producto">Eliminar</button></td>
-            `;
-            
-            tableBody.appendChild(row);
-
-            // Función para eliminar una fila
-            row.querySelector('.eliminar-producto').addEventListener('click', function() {
-                row.remove();
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            const toast = document.getElementById("toast");
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);  // Oculta después de 3 segundos
         });
     </script>
+{% endif %}
+{% endwith %}
+
+<!-- Incluir jQuery antes de Bootstrap -->
+
 </body>
 </html>

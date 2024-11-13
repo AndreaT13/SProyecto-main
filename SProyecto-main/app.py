@@ -16,6 +16,8 @@ from fpdf import FPDF
 import tempfile
 from datetime import date
 from fpdf.enums import XPos, YPos
+import io
+
 
 
 pymysql.install_as_MySQLdb()
@@ -40,7 +42,7 @@ class Usuarios(db.Model):
 class Clientes(db.Model):
     __tablename__ = 'clientes'
     id_cliente = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
+    nombre = db.Column(db.String(100), unique=True, nullable=False)
     correo = db.Column(db.String(100), nullable=False)
     telefono = db.Column(db.String(20), nullable=False)
     direccion = db.Column(db.String(200), nullable=False)
@@ -52,7 +54,6 @@ class Productos(db.Model):
     producto = db.Column(db.String(50))  # Nombre del producto
     precio = db.Column(db.Float)  # Precio del producto
     id_categoria = db.Column(db.String(255))
-   # descripcion= db.Column(db.String(255))
 
 class Pedido(db.Model):
     __tablename__ = 'pedido'
@@ -61,7 +62,11 @@ class Pedido(db.Model):
     nombre_cliente = db.Column(db.String(100), nullable=False)
     direccion = db.Column(db.String(200), nullable=False)
     fecha = db.Column(db.Date, nullable=False)
-    vendedor = db.Column(db.String(50), nullable=False)
+    estado = db.Column(db.String(20), nullable=False, default='Pendiente')  # Campo para el estado del pedido
+
+
+    detalles = db.relationship('DetallePedido', back_populates='pedido', cascade='all, delete-orphan')
+
 
 class DetallePedido(db.Model):
     __tablename__ = 'detalle_pedido'
@@ -75,7 +80,7 @@ class DetallePedido(db.Model):
 
 
 
-    pedido = db.relationship('Pedido', backref=db.backref('detalles', lazy=True))
+    pedido = db.relationship('Pedido', back_populates='detalles')
 
 # Ruta para crear un usuario
 @app.route('/crear-usuario', methods=['GET', 'POST'])
@@ -116,10 +121,10 @@ def registrar_cliente():
         telefono=request.form['telefono']
         correo=request.form['correo']
 
-        cliente_existente = Clientes.query.filter_by(id_cliente=id).first()
+        cliente_existente = Clientes.query.filter_by(nombre=nombre).first()
 
         if cliente_existente:
-            flash('Código de cliente existente', 'error')
+            flash('Nombre de cliente existente', 'error')
             return redirect(url_for('mostrar_clientes'))
 
         nuevo_cliente = Clientes(
@@ -167,40 +172,45 @@ def crear_producto():
 
 @app.route('/guardar_pedido', methods=['POST'])
 def guardar_pedido():
-    pedido_id = request.form['pedido_id']
-    id_cliente = request.form['id_cliente']
-    nombre_cliente = request.form['nombreCliente']
-    direccion = request.form['direccion']
-    #producto = json.loads(request.form['producto'])  
+    data = request.get_json()
 
-    # Conexión a la base de datos
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="seminario"
+    if not data:
+        flash('No se recibieron datos.', 'error')
+        return redirect(url_for('uso'))
+
+    id_cliente = data.get('id_cliente')
+    nombre_cliente = data.get('nombre_cliente')
+    direccion = data.get('direccion')
+    productos = data.get('productos', [])
+    fecha = datetime.now()  # Fecha actual
+
+    if not id_cliente or not nombre_cliente or not direccion:
+        flash('Faltan datos del cliente.', 'error')
+        return redirect(url_for('uso'))
+
+    nuevo_pedido = Pedido(
+        id_cliente=id_cliente,
+        nombre_cliente=nombre_cliente,
+        direccion=direccion,
+        fecha=fecha
     )
-    mycursor = mydb.cursor()
+    db.session.add(nuevo_pedido)
+    db.session.commit()
 
-    print("guarda el encabezado")
-    # Inserta el pedido en la tabla 'pedido'
-    mycursor.execute("""
-        INSERT INTO pedido (id_cliente, nombre_cliente, direccion, fecha)
-        VALUES (%s, %s, %s, CURDATE());
-    """, (id_cliente, nombre_cliente, direccion))
+    for producto in productos:
+        nuevo_detalle = DetallePedido(
+            id_pedido=nuevo_pedido.id_pedido,
+            codigo_producto=producto['id'],
+            nombre_producto=producto['nombre_producto'],
+            cantidad=producto['cantidad'],
+            precio=producto['precio'],
+            subtotal=producto['subtotal']
+        )
+        db.session.add(nuevo_detalle)
 
-
-    # Obtén el ID del pedido insertado
-    mydb.commit()
-    id_pedido = mycursor.lastrowid  # Este es el ID del pedido recién creado
-
-
-
-    # Commit de los cambios
-    mydb.commit()
-    mycursor.close()
-
-    return redirect('/crear_pedidos')
+    db.session.commit()
+    flash('Pedido guardado exitosamente.', 'success')
+    return redirect(url_for('uso'))
 
 
 @app.route('/crear_pedidos', methods=['GET'])
@@ -235,7 +245,8 @@ def login():
             session['user_id'] = user.id_usuario  # Guarda el ID de usuario en la sesión
             return redirect(url_for('uso'))   # Redirige a la página de pedidos
         else:
-            flash('Credenciales incorrectas, intenta nuevamente')
+            flash('Credenciales incorrectas, intenta nuevamente','danger')
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.route('/capa1')
@@ -243,27 +254,75 @@ def capa1():
     return render_template('capa1.html')
 
 
-# Your existing route functions
-@app.route('/api/productos')
-def obtener_productos():
-    productos = Productos.query.all()
-    return jsonify([{ 
-        'id_producto': producto.id_producto,  # Cambiado de 'codigo' a 'id_producto'
-        'nombre': producto.producto,  # Cambiado de 'nombre' a 'producto'
-        'precio': producto.precio 
-    } for producto in productos])
-
-@app.route('/api/clientes')
+@app.route('/api/clientes', methods=['GET'])
 def obtener_clientes():
+    clientes = Clientes.query.all()  # Asegúrate de tener un modelo Cliente
+    clientes_json = [{"id": c.id_cliente, "nombre": c.nombre, "direccion": c.direccion} for c in clientes]
+    return jsonify(clientes_json)
 
-    clientes = Clientes.query.all()
-    return jsonify([{ 
-        'id_cliente': cliente.id_cliente,  # Cambiar a 'id_cliente' si ese es el nombre correcto
-        'nombre': cliente.nombre, 
-        'correo': cliente.correo, 
-        'telefono': cliente.telefono, 
-        'direccion': cliente.direccion 
-    } for cliente in clientes])
+@app.route('/api/productos', methods=['GET'])
+def obtener_productos():
+    productos = Productos.query.all()  # Asegúrate de tener un modelo Producto
+    productos_json = [{"id": p.id_producto, "nombre": p.producto, "precio": p.precio} for p in productos]
+    return jsonify(productos_json)
+
+@app.route('/api/pedidos', methods=['GET'])
+def obtener_pedidos():
+    pedidos = Pedido.query.all()  # Obtén todos los pedidos desde la base de datos
+    pedidos_json = []
+    for pedido in pedidos:
+        detalles = DetallePedido.query.filter_by(id_pedido=pedido.id_pedido).all()
+        detalles_json = [{
+            "codigo_producto": detalle.codigo_producto,
+            "nombre_producto": detalle.nombre_producto,
+            "cantidad": detalle.cantidad,
+            "precio": detalle.precio,
+            "subtotal": detalle.subtotal
+        } for detalle in detalles]
+        pedidos_json.append({
+            "id_pedido": pedido.id_pedido,
+            "fecha": pedido.fecha.isoformat(),
+            "estado": pedido.estado,
+            "cliente": pedido.nombre_cliente,  # Aquí traemos el nombre del cliente
+            "detalles": detalles_json
+        })
+    return jsonify(pedidos_json)
+
+@app.route('/api/pedidos/<int:id_pedido>', methods=['POST'])
+def actualizar_estado(id_pedido):
+    try:
+        # Leer el nuevo estado desde la solicitud JSON
+        data = request.get_json()
+        nuevo_estado = data.get('estado')
+
+        if not nuevo_estado:
+            return jsonify({"success": False, "message": "No se recibió el nuevo estado."}), 400
+
+        # Buscar el pedido en la base de datos
+        pedido = Pedido.query.get(id_pedido)
+
+        if not pedido:
+            return jsonify({"success": False, "message": "El pedido no existe."}), 404
+
+        # Actualizar el estado del pedido
+        pedido.estado = nuevo_estado
+        db.session.commit()
+
+        return jsonify({"success": True, "message": "Estado del pedido actualizado con éxito."}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": f"Error al actualizar el estado del pedido: {str(e)}"}), 500
+
+@app.route('/api/pedidos/<int:id_pedido>', methods=['DELETE'])
+def eliminar_pedido(id_pedido):
+    pedido = Pedido.query.get(id_pedido)
+    if not pedido:
+        return jsonify({"message": "Pedido no encontrado"}), 404
+    DetallePedido.query.filter_by(id_pedido=id_pedido).delete()  # Elimina los detalles asociados
+    db.session.delete(pedido)
+    db.session.commit()
+    return jsonify({"message": "Pedido eliminado correctamente"})
 
 @app.route('/mostrar_clientes' , methods=['GET'])
 def mostrar_clientes():
@@ -526,6 +585,121 @@ def crear_pedido():
     db.session.commit()  # Guarda todos los productos del pedido
 
     return jsonify({'message': 'Pedido y detalles guardados correctamente'}), 201
+
+@app.route('/administrar_pedidos', methods=['GET'])
+def administrar_pedidos():
+    return render_template('pedidos.html')  # Archivo HTML con la tabla de pedidos
+
+class PDF(FPDF):
+    def header(self):
+        # Logo
+        self.image('SProyecto-main\static\Imagenes\logo.jpg', 10, 8, 19)  # Asegúrate de tener un archivo de logo
+        self.set_font('Arial', 'B', 16)
+        self.cell(0, 15, 'RECIBO', border=False, ln=True, align='C')
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Página {self.page_no()}', align='C')
+
+@app.route('/pedido/<int:id_pedido>/detalle-pdf', methods=['GET'])
+def generar_detalle_pedido_pdf(id_pedido):
+    # Obtener el pedido y los detalles
+    pedido = Pedido.query.get_or_404(id_pedido)
+    detalles = DetallePedido.query.filter_by(id_pedido=id_pedido).all()
+
+    # Crear el PDF
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=10)
+
+    # Información del pedido
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, "Información del Pedido", ln=True, align="L")
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 10, f"ID Pedido: {pedido.id_pedido}", ln=True, align="L")
+    pdf.cell(0, 10, f"Cliente: {pedido.nombre_cliente}", ln=True, align="L")
+    pdf.cell(0, 10, f"Dirección: {pedido.direccion}", ln=True, align="L")
+    pdf.cell(0, 10, f"Fecha: {pedido.fecha.strftime('%d/%m/%Y')}", ln=True, align="L")
+    pdf.cell(0, 10, f"Estado: {pedido.estado}", ln=True, align="L")
+    pdf.ln(10)
+
+    # Tabla de detalles del pedido
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, "Detalles", ln=True, align="L")
+    pdf.set_font('Arial', 'B', 10)
+
+    # Encabezados de la tabla
+    pdf.cell(30, 10, "Cantidad", border=1, align='C')
+    pdf.cell(80, 10, "Producto", border=1, align='C')
+    pdf.cell(30, 10, "Precio (Q)", border=1, align='C')
+    pdf.cell(30, 10, "Subtotal (Q)", border=1, align='C')
+    pdf.ln()
+
+    # Contenido de la tabla
+    pdf.set_font('Arial', '', 10)
+    for detalle in detalles:
+        pdf.cell(30, 10, str(detalle.cantidad), border=1, align='C')
+        pdf.cell(80, 10, detalle.nombre_producto, border=1)
+        pdf.cell(30, 10, f"{detalle.precio:.2f}", border=1, align='R')
+        pdf.cell(30, 10, f"{detalle.subtotal:.2f}", border=1, align='R')
+        pdf.ln()
+
+    # Total
+    pdf.set_font('Arial', 'B', 10)
+    total = sum(detalle.subtotal for detalle in detalles)
+    pdf.cell(140, 10, "Total (Q):", border=1, align='R')
+    pdf.cell(30, 10, f"{total:.2f}", border=1, align='R')
+    pdf.ln(10)
+
+    # Enviar el PDF como respuesta
+    pdf_output = io.BytesIO()
+    pdf.output(pdf_output)
+    pdf_output.seek(0)
+    
+    return send_file(pdf_output, as_attachment=True, download_name=f"recibo_pedido_{id_pedido}.pdf", mimetype="application/pdf")
+
+@app.route('/api/pedidos', methods=['GET'])
+def obtener_pedidos_filtrados():
+    # Obtener los parámetros de los filtros
+    cliente = request.args.get('cliente', default=None)
+    fecha_inicio = request.args.get('fecha_inicio', default=None)
+    fecha_fin = request.args.get('fecha_fin', default=None)
+
+    # Construir la consulta base
+    query = Pedido.query
+
+    # Filtrar por cliente (si se especifica)
+    if cliente:
+        query = Pedido.query.filter(func.trim(Pedido.nombre_cliente).ilike(f"%{cliente}%"))
+        print(query)  # Muestra la consulta generada
+
+
+    # Filtrar por rango de fechas (si se especifica)
+    if fecha_inicio and fecha_fin:
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+            fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+            query = query.filter(Pedido.fecha.between(fecha_inicio, fecha_fin))
+        except ValueError:
+            return jsonify({"success": False, "message": "Formato de fecha inválido."}), 400
+
+    # Ejecutar la consulta y devolver los resultados
+    pedidos = query.all()
+
+    # Convertir los resultados en JSON
+    pedidos_json = [
+        {
+            "id_pedido": pedido.id_pedido,
+            "nombre_cliente": pedido.nombre_cliente,
+            "fecha": pedido.fecha.strftime("%Y-%m-%d"),
+            "estado": pedido.estado,
+        }
+        for pedido in pedidos
+    ]
+
+    return jsonify({"success": True, "pedidos": pedidos_json})
 
 @app.route('/logout')
 def logout():
