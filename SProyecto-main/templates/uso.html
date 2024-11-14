@@ -164,13 +164,13 @@
     function enviarPedido() {
         const productos = [];
         document.querySelectorAll('#productosTabla tr').forEach(row => {
-            const id = row.dataset.idProducto;
+            const id_producto = row.dataset.idProducto;
             const nombre_producto = row.querySelector('td:nth-child(1)').textContent.trim();
             const cantidad = parseInt(row.querySelector('.cantidad').value) || 0;
             const precio = parseFloat(row.querySelector('td:nth-child(3)').textContent) || 0;
             const subtotal = cantidad * precio;
     
-            productos.push({ id, nombre_producto, cantidad, precio, subtotal });
+            productos.push({ id_producto, nombre_producto, cantidad, precio, subtotal });
         });
         
     
@@ -191,6 +191,7 @@
         if (data.success) {
             alert('Pedido guardado correctamente');
             document.getElementById('id_pedido').value = data.id_pedido;
+            console.log('Llamando a limpiarCampos...');
             limpiarCampos(); // Limpia los campos del formulario
         } else {
             alert('Error al guardar el pedido: ' + data.message);
@@ -220,10 +221,10 @@ function mostrarToast(mensaje, tipo) {
                 tabla.innerHTML = '';
                 clientes.forEach(cliente => {
                     const row = `<tr>
-                        <td>${cliente.id}</td>
+                        <td>${cliente.id_cliente}</td>
                         <td>${cliente.nombre}</td>
                         <td>${cliente.direccion}</td>
-                        <td><button class="btn btn-primary btn-sm" onclick="seleccionarCliente(${cliente.id}, '${cliente.nombre}', '${cliente.direccion}')">Seleccionar</button></td>
+                        <td><button class="btn btn-primary btn-sm" onclick="seleccionarCliente(${cliente.id_cliente}, '${cliente.nombre}', '${cliente.direccion}')">Seleccionar</button></td>
                     </tr>`;
                     tabla.insertAdjacentHTML('beforeend', row);
                 });
@@ -247,10 +248,11 @@ function mostrarToast(mensaje, tipo) {
                 tabla.innerHTML = '';
                 productos.forEach(producto => {
                     const row = `<tr>
-                        <td>${producto.id}</td>
-                        <td>${producto.nombre}</td>
+                        <td>${producto.id_producto}</td>
+                        <td>${producto.producto}</td>
                         <td>${producto.precio.toFixed(2)}</td>
-                        <td><button class="btn btn-success btn-sm" onclick="agregarProducto(${producto.id}, '${producto.nombre}', ${producto.precio})">Agregar</button></td>
+
+                        <td><button class="btn btn-success btn-sm" onclick="agregarProducto(${producto.id_producto}, '${producto.producto}', ${producto.precio})">Agregar</button></td>
                     </tr>`;
                     tabla.insertAdjacentHTML('beforeend', row);
                 });
@@ -258,10 +260,10 @@ function mostrarToast(mensaje, tipo) {
             .catch(error => console.error('Error al cargar productos:', error));
     }
     
-    function agregarProducto(id, nombre, precio) {
+    function agregarProducto(id_producto, producto, precio) {
         const tabla = document.getElementById('productosTabla');
-        const row = `<tr data-id-producto="${id}">
-            <td>${nombre}</td>
+        const row = `<tr data-id-producto="${id_producto}">
+            <td>${producto}</td>
             <td><input type="number" class="form-control cantidad" value="1" min="1" onchange="actualizarSubtotal(this)"></td>
             <td>${precio.toFixed(2)}</td>
             <td class="subtotal">${precio.toFixed(2)}</td>
@@ -297,7 +299,7 @@ function mostrarToast(mensaje, tipo) {
     function limpiarCampos() {
     // Limpiar campos del cliente
     document.getElementById('id_cliente').value = '';
-    document.getElementById('nombreCliente').value = '';
+    document.getElementById('nombre_cliente').value = '';
     document.getElementById('direccion').value = '';
 
     // Limpiar la tabla de productos
@@ -305,20 +307,23 @@ function mostrarToast(mensaje, tipo) {
 
     // Reiniciar los totales
     document.getElementById('total').innerText = '0.00';
+
+    // Opcional: Limpia el campo del ID del pedido si es necesario
+    document.getElementById('id_pedido').value = '';
 }
 
 
-    function filtrarClientes() {
+function filtrarClientes() {
     const nombre = document.getElementById('buscarCliente').value;
 
     fetch(`/api/clientes?nombre=${encodeURIComponent(nombre)}`)
         .then(response => response.json())
         .then(clientes => {
             const tabla = document.getElementById('clientesLista');
-            tabla.innerHTML = '';
+            tabla.innerHTML = ''; // Limpia la tabla
 
             if (clientes.length === 0) {
-                tabla.innerHTML = '<tr><td colspan="3">No se encontraron clientes.</td></tr>';
+                tabla.innerHTML = '<tr><td colspan="4">No se encontraron clientes.</td></tr>';
                 return;
             }
 
@@ -339,6 +344,8 @@ function mostrarToast(mensaje, tipo) {
         })
         .catch(error => console.error('Error al filtrar clientes:', error));
 }
+    
+
 function filtrarProductos() {
     const nombre = document.getElementById('buscarProducto').value;
 
@@ -346,21 +353,21 @@ function filtrarProductos() {
         .then(response => response.json())
         .then(productos => {
             const tabla = document.getElementById('productosLista');
-            tabla.innerHTML = '';
+            tabla.innerHTML = ''; // Limpia la tabla
 
             if (productos.length === 0) {
-                tabla.innerHTML = '<tr><td colspan="3">No se encontraron productos.</td></tr>';
+                tabla.innerHTML = '<tr><td colspan="4">No se encontraron productos.</td></tr>';
                 return;
             }
 
             productos.forEach(producto => {
                 const row = `
                     <tr>
-                        <td>${producto.id}</td>
-                        <td>${producto.nombre}</td>
+                        <td>${producto.id_producto}</td>
+                        <td>${producto.producto}</td>
                         <td>${producto.precio.toFixed(2)}</td>
                         <td>
-                            <button class="btn btn-success btn-sm" onclick="agregarProducto('${producto.id_producto}', '${producto.nombre}', ${producto.precio})">
+                            <button class="btn btn-success btn-sm" onclick="agregarProducto('${producto.id_producto}', '${producto.producto}', ${producto.precio})">
                                 Agregar
                             </button>
                         </td>
@@ -370,6 +377,8 @@ function filtrarProductos() {
         })
         .catch(error => console.error('Error al filtrar productos:', error));
 }
+
+
 document.getElementById('buscarCliente').addEventListener('input', filtrarClientes);
 document.getElementById('buscarProducto').addEventListener('input', filtrarProductos);
 

@@ -74,12 +74,7 @@
         <div class="col-md-4">
             <input type="text" id="filtroCliente" class="form-control" placeholder="Filtrar por cliente">
         </div>
-        <div class="col-md-3">
-            <input type="date" id="fechaInicio" class="form-control" placeholder="Fecha inicio">
-        </div>
-        <div class="col-md-3">
-            <input type="date" id="fechaFin" class="form-control" placeholder="Fecha fin">
-        </div>
+       
         <div class="col-md-2">
             <button class="btn btn-primary w-100" onclick="filtrarPedidos()">Filtrar</button>
         </div>
@@ -212,15 +207,12 @@
 
     function filtrarPedidos() {
     const cliente = document.getElementById('filtroCliente').value.trim();
-    const fechaInicio = document.getElementById('fechaInicio').value;
-    const fechaFin = document.getElementById('fechaFin').value;
 
     // Construir la URL con los parámetros de filtro
     let url = '/api/pedidos?';
     const params = [];
     if (cliente) params.push(`cliente=${encodeURIComponent(cliente)}`);
-    if (fechaInicio) params.push(`fecha_inicio=${fechaInicio}`);
-    if (fechaFin) params.push(`fecha_fin=${fechaFin}`);
+  
     url += params.join('&');
 
     // Enviar la solicitud al servidor

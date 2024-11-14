@@ -172,35 +172,38 @@ def crear_producto():
 
 @app.route('/guardar_pedido', methods=['POST'])
 def guardar_pedido():
-    data = request.get_json()
 
-    if not data:
-        flash('No se recibieron datos.', 'error')
-        return redirect(url_for('uso'))
+    try:
 
-    id_cliente = data.get('id_cliente')
-    nombre_cliente = data.get('nombre_cliente')
-    direccion = data.get('direccion')
-    productos = data.get('productos', [])
-    fecha = datetime.now()  # Fecha actual
+        data = request.get_json()
+        productos = data.get('productos', [])
 
-    if not id_cliente or not nombre_cliente or not direccion:
-        flash('Faltan datos del cliente.', 'error')
-        return redirect(url_for('uso'))
 
-    nuevo_pedido = Pedido(
+        if not data:
+            return jsonify({"success": False, "message": "No se recibieron datos."}), 400
+
+        id_cliente = data.get('id_cliente')
+        nombre_cliente = data.get('nombre_cliente')
+        direccion = data.get('direccion')
+        productos = data.get('productos', [])
+        fecha = datetime.now()  # Fecha actual
+
+        if not id_cliente or not nombre_cliente or not direccion:
+            return jsonify({"success": False, "message": "Faltan datos del cliente."}), 400
+
+        nuevo_pedido = Pedido(
         id_cliente=id_cliente,
         nombre_cliente=nombre_cliente,
         direccion=direccion,
         fecha=fecha
     )
-    db.session.add(nuevo_pedido)
-    db.session.commit()
+        db.session.add(nuevo_pedido)
+        db.session.commit()
 
-    for producto in productos:
-        nuevo_detalle = DetallePedido(
+        for producto in productos:
+            nuevo_detalle = DetallePedido(
             id_pedido=nuevo_pedido.id_pedido,
-            codigo_producto=producto['id'],
+            codigo_producto=producto['id_producto'],
             nombre_producto=producto['nombre_producto'],
             cantidad=producto['cantidad'],
             precio=producto['precio'],
@@ -208,10 +211,11 @@ def guardar_pedido():
         )
         db.session.add(nuevo_detalle)
 
-    db.session.commit()
-    flash('Pedido guardado exitosamente.', 'success')
-    return redirect(url_for('uso'))
-
+        db.session.commit()
+        return jsonify({"success": True, "id_pedido": nuevo_pedido.id_pedido})
+    except Exception as e:
+        # Manejo de errores
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/crear_pedidos', methods=['GET'])
 def crear_pedidos():
@@ -254,17 +258,64 @@ def capa1():
     return render_template('capa1.html')
 
 
+from flask import request, jsonify
+
 @app.route('/api/clientes', methods=['GET'])
-def obtener_clientes():
-    clientes = Clientes.query.all()  # Asegúrate de tener un modelo Cliente
-    clientes_json = [{"id": c.id_cliente, "nombre": c.nombre, "direccion": c.direccion} for c in clientes]
-    return jsonify(clientes_json)
+def api_mostrar_clientes():
+    nombre = request.args.get('nombre', '').strip()  # Obtener el filtro de nombre si existe
+
+    # Conectar a la base de datos MySQL
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="seminario"
+    )
+    mycursor = db.cursor(dictionary=True)
+
+    # Consulta SQL para buscar clientes por nombre
+    if nombre:
+        query = "SELECT id_cliente, nombre, direccion FROM clientes WHERE nombre LIKE %s"
+        mycursor.execute(query, (f"%{nombre}%",))
+    else:
+        query = "SELECT id_cliente, nombre, direccion FROM clientes"
+        mycursor.execute(query)
+
+    clientes = mycursor.fetchall()
+    db.close()
+
+    # Devolver los clientes en formato JSON
+    return jsonify(clientes)
 
 @app.route('/api/productos', methods=['GET'])
-def obtener_productos():
-    productos = Productos.query.all()  # Asegúrate de tener un modelo Producto
-    productos_json = [{"id": p.id_producto, "nombre": p.producto, "precio": p.precio} for p in productos]
-    return jsonify(productos_json)
+def api_mostrar_productos():
+    # Obtener el parámetro 'nombre' del frontend (que corresponde a 'producto' en la base de datos)
+    producto = request.args.get('nombre', '').strip()
+
+    # Conectar a la base de datos MySQL
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="seminario"
+    )
+    mycursor = db.cursor(dictionary=True)
+
+    # Consulta SQL para buscar productos
+    if producto:
+        query = "SELECT id_producto, producto, precio FROM producto WHERE producto LIKE %s"
+        mycursor.execute(query, (f"%{producto}%",))
+    else:
+        query = "SELECT id_producto, producto, precio FROM producto"
+        mycursor.execute(query)
+
+    productos = mycursor.fetchall()
+    db.close()
+
+    # Formatear la respuesta JSON
+    return jsonify(productos)
+
+
 
 @app.route('/api/pedidos', methods=['GET'])
 def obtener_pedidos():
@@ -676,14 +727,7 @@ def obtener_pedidos_filtrados():
         print(query)  # Muestra la consulta generada
 
 
-    # Filtrar por rango de fechas (si se especifica)
-    if fecha_inicio and fecha_fin:
-        try:
-            fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
-            fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
-            query = query.filter(Pedido.fecha.between(fecha_inicio, fecha_fin))
-        except ValueError:
-            return jsonify({"success": False, "message": "Formato de fecha inválido."}), 400
+
 
     # Ejecutar la consulta y devolver los resultados
     pedidos = query.all()
